@@ -2,7 +2,8 @@
 import { Phone, Mail, MapPin, Truck, CreditCard, ShoppingBag, XCircle } from 'lucide-vue-next'
 
 definePageMeta({
-	layout: 'profile'
+	layout: 'profile',
+	middleware: 'auth'
 })
 </script>
 

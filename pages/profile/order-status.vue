@@ -2,7 +2,8 @@
 import { Icon } from '@iconify/vue'
 
 definePageMeta({
-	layout: 'profile'
+	layout: 'profile',
+	middleware: 'auth'
 })
 
 const orders = [

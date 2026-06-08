@@ -7,8 +7,6 @@ import 'swiper/css/effect-fade'
 import { Autoplay, Pagination, EffectFade } from 'swiper/modules'
 import { useCartStore } from '@/stores/cart'
 
-const api = useApi()
-
 const props = defineProps({
 	product: {
 		type: Object,
@@ -23,8 +21,12 @@ const props = defineProps({
 })
 
 const settings = {
-	loop: false,
-	autoplay: false,
+	loop: true,
+	autoplay: {
+		delay: 3000,
+		disableOnInteraction: false
+	},
+	delay: 3000,
 	slidesPerView: 1,
 	spaceBetween: 12,
 	pagination: {
@@ -40,21 +42,18 @@ const { addToCart, isInCart, updateItemQuantity } = cartStore
 const open = ref(false)
 const activeProduct = ref(null)
 
-const imageUrl = computed(() => {
-	const id = props.product?.image
-	return api.fileUrl(id)
-})
-
 const openModal = (product) => {
-	open.value = true
-	activeProduct.value = product
+	if (product.id === props.product.id) {
+		open.value = true
+		activeProduct.value = product
+	}
 }
-
 const handleAddToCart = (product) => {
 	addToCart(product)
 }
 
 const updateQuantity = (newQuantity) => {
+	console.log(newQuantity)
 	updateItemQuantity(props.product.id, newQuantity)
 }
 
@@ -67,9 +66,9 @@ const cartQuantity = computed(() => {
 	<div class="flex flex-col rounded-xl bg-card overflow-hidden cursor-pointer transition-300 group shadow-box hover:shadow-blog h-full">
 		<div>
 			<Swiper ref="swiperRef" v-bind="settings" :modules="[Autoplay, Pagination, EffectFade]" class="product-slider">
-				<SwiperSlide @click="openModal(product)">
+				<SwiperSlide v-for="item in 5" :key="item" @click="openModal(product)">
 					<div class="w-full relative aspect-square cursor-pointer">
-						<CommonImage class="w-full h-full" :src="imageUrl" :alt="product.title?.uz" :image-class="'object-center'" />
+						<CommonImage class="w-full h-full" :src="`https://tarnov.uz/_next/image?url=https%3A%2F%2Fcdn.delever.uz%2Fdelever%2F${product.image}&w=1920&q=75`" :alt="product.title.uz" :image-class="'object-center'" />
 					</div>
 				</SwiperSlide>
 			</Swiper>
@@ -80,9 +79,7 @@ const cartQuantity = computed(() => {
 				{{ product?.description?.uz }}
 			</p>
 			<div class="flex flex-col my-2">
-				<span class="line-through text-muted-foreground text-xs" v-if="product?.discountPrice">
-					{{ formatPrice(product.discountPrice) }} {{ product?.currency }}
-				</span>
+				<span class="line-through text-muted-foreground text-xs" v-if="product?.currency"> 120 000 UZS</span>
 				<span class="text-base sm:text-lg lg:text-xl font-medium">
 					{{ formatPrice(product?.out_price) }} <span>{{ product?.currency }}</span>
 				</span>
@@ -95,7 +92,7 @@ const cartQuantity = computed(() => {
 						<path d="M12 5v14" />
 					</svg>
 				</Button>
-				<NumberField v-else :min="1" :model-value="cartQuantity" @update:model-value="updateQuantity">
+				<NumberField v-else :min="1" v-model="cartQuantity" @update:model-value="updateQuantity($event)">
 					<NumberFieldContent>
 						<NumberFieldDecrement />
 						<NumberFieldInput class="rounded-xl" readonly />
