@@ -78,5 +78,5 @@ const handleLogout = () => {
 		</DropdownMenuContent>
 	</DropdownMenu>
 
-	<ModalAuth v-model="open" />
+	<ModalAuth v-model="open" @login-success="handleLoginSuccess" />
 </template>

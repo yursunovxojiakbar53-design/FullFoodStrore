@@ -1,12 +1,12 @@
 <script setup>
-const api = useApi()
+const config = useRuntimeConfig()
 const aboutContent = ref(null)
 const loading = ref(true)
 
 onMounted(async () => {
 	try {
-		const res = await api.get('/open/about')
-		const data = api.unwrap(res)
+		const res = await $fetch(`${config.public.backendBase}/about`)
+		const data = res?.data || res
 		aboutContent.value = Array.isArray(data) ? data[0] : data
 	} catch {
 		// fallback to static content if endpoint fails
