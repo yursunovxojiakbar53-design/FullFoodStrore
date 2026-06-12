@@ -1,47 +1,91 @@
 export const useCategoriesStore = defineStore('categoriesStore', () => {
-	const config = useRuntimeConfig()
+	const api = useApi()
 	const categories = ref([])
 	const loading = ref(false)
+	const authError = ref(false)
+	const error = ref(null)
 
 	const fetchCategories = async () => {
 		loading.value = true
+		authError.value = false
+		error.value = null
+
 		try {
-			// Kategoriyalarni ol
-			const catRes = await $fetch(`${config.public.apiBase}/categories/open`)
-			const cats = catRes.data || catRes
+			const [catRes, prodRes] = await Promise.all([
+				api.get('/categories/open'),
+				api.get('/open/products', { query: { page: 0, size: 200 } })
+			])
 
-			// Har kategoriya uchun mahsulotlarni ol
-			const result = await Promise.all(
-				cats.map(async (cat) => {
-					const prodRes = await $fetch(
-						`${config.public.apiBase}/open/products?categoryId=${cat.id}`
+			const cats = api.extractList(catRes)
+				.filter((cat) => cat.status !== false && cat.active !== false)
+				.sort((a, b) => (a.orderId || 0) - (b.orderId || 0))
+
+			const allProducts = api.extractList(prodRes)
+				.filter((product) => product.available !== false && product.isAvailable !== false)
+
+			if (!cats.length) {
+				categories.value = allProducts.length
+					? [{
+						id: 0,
+						title: { uz: 'Barcha mahsulotlar', ru: 'Все продукты', en: 'All products' },
+						products: allProducts.map(mapProduct)
+					}]
+					: []
+				return
+			}
+
+			categories.value = cats.map((cat) => ({
+				id: cat.id,
+				title: {
+					uz: cat.nameUz || cat.name || '',
+					ru: cat.nameRu || cat.name || '',
+					en: cat.nameEng || cat.name || ''
+				},
+				products: allProducts
+					.filter((product) =>
+						product.categoryId == cat.id ||
+						product.category_id == cat.id ||
+						product.category?.id == cat.id ||
+						product.categoryDTO?.id == cat.id
 					)
-					const products = prodRes.data || prodRes
+					.map(mapProduct)
+			}))
 
-					return {
-						id: cat.id,
-						title: { uz: cat.nameUz, ru: cat.nameRu, en: cat.nameEng },
-						products: products.map(p => ({
-							id: p.id,
-							title: { uz: p.name },
-							description: { uz: p.descriptionUz || '' },
-							out_price: p.currentPrice > 0 ? p.currentPrice : p.price,
-							currency: "so'm",
-							discountPrice: p.discountPrice,
-							image: p.attachment?.id
-								? `${config.public.apiBase}/files/view/${p.attachment.id}`
-								: null
-						}))
-					}
-				})
-			)
-			categories.value = result
+			const hasAnyProduct = categories.value.some((category) => category.products.length > 0)
+			if (!hasAnyProduct && allProducts.length && categories.value.length) {
+				categories.value[0].products = allProducts.map(mapProduct)
+			}
 		} catch (e) {
-			console.error('Xatolik:', e)
+			error.value = api.errorMessage(e, 'Mahsulotlar yuklanmadi')
+			authError.value = api.isAuthError(e)
+			console.error('Kategoriyalar yuklanmadi:', error.value)
 		} finally {
 			loading.value = false
 		}
 	}
 
-	return { categories, loading, fetchCategories }
+	const mapProduct = (product) => {
+		const basePrice = Number(product.price || 0)
+		const salePrice = Number(product.currentPrice || product.discountPrice || basePrice || 0)
+
+		return {
+			id: product.id,
+			title: {
+				uz: product.nameUz || product.name || '',
+				ru: product.nameRu || product.name || '',
+				en: product.nameEng || product.name || ''
+			},
+			description: {
+				uz: product.descriptionUz || product.description || '',
+				ru: product.descriptionRu || product.description || '',
+				en: product.descriptionEng || product.descriptionEn || product.description || ''
+			},
+			out_price: salePrice,
+			currency: "so'm",
+			discountPrice: basePrice > salePrice ? basePrice : null,
+			image: product.attachment?.id || product.attachmentId || product.imageUrl || null
+		}
+	}
+
+	return { categories, loading, authError, error, fetchCategories }
 })

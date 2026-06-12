@@ -1,10 +1,9 @@
 <script setup>
 const categoriesStore = useCategoriesStore()
-const { categories, loading } = storeToRefs(categoriesStore)
+const { categories, loading, authError, error } = storeToRefs(categoriesStore)
 
 const activeCategory = ref(null)
 
-// Sahifa ochilganda backenddan ma'lumot ol
 onMounted(async () => {
 	await categoriesStore.fetchCategories()
 	window.addEventListener('scroll', handleScroll)
@@ -38,6 +37,7 @@ const handleScroll = () => {
 		activeCategory.value = currentActive
 	}
 }
+
 </script>
 
 <template>
@@ -46,6 +46,22 @@ const handleScroll = () => {
 		<!-- Loading -->
 		<div v-if="loading" class="flex justify-center py-10">
 			<span>Yuklanmoqda...</span>
+		</div>
+
+		<!-- Backend load error -->
+		<div v-else-if="authError || error" class="py-20 flex flex-col items-center gap-4 text-center">
+			<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-muted-foreground">
+				<circle cx="12" cy="12" r="10" /><path d="M12 8v4" /><path d="M12 16h.01" />
+			</svg>
+			<p class="text-xl font-semibold">Menyu yuklanmadi</p>
+			<p class="text-sm text-muted-foreground">{{ error || 'Backend bilan bog\'lanishda xatolik yuz berdi.' }}</p>
+			<Button class="mt-2 px-8" @click="categoriesStore.fetchCategories()">Qayta yuklash</Button>
+		</div>
+
+		<div v-else-if="!categories.length" class="py-16 text-center text-muted-foreground">
+			<p class="text-lg">Mahsulotlar yuklanmadi.</p>
+			<p class="text-sm mt-2">Sahifani yangilang yoki qaytadan kiring.</p>
+			<Button class="mt-4" @click="categoriesStore.fetchCategories()">Qayta yuklash</Button>
 		</div>
 
 		<div v-else>

@@ -4,7 +4,8 @@ import { Icon } from '@iconify/vue'
 import { useTranslate } from '~/utils/i18n-validators'
 
 definePageMeta({
-	layout: 'profile'
+	layout: 'profile',
+	middleware: 'auth'
 })
 
 const { validPhoneNumber, minLength, required } = useTranslate()

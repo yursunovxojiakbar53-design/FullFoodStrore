@@ -1,31 +1,32 @@
 <template>
-	<div v-lazy="src" :error-state="errorState" class="image-loading overflow-hidden">
-		<img :alt="alt" class="h-full w-full object-cover" :class="imageClass" />
+	<div class="image-loading overflow-hidden">
+		<img
+			:src="imgSrc"
+			:alt="alt"
+			loading="lazy"
+			decoding="async"
+			class="h-full w-full object-cover"
+			:class="imageClass"
+			@error="onError"
+		/>
 	</div>
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
+const props = defineProps({
+	src: { type: String, default: '' },
+	alt: { type: String, default: 'image' },
+	imageClass: { type: [String, Array, Object], default: '' }
+})
 
-// Propsni default qiymatlar bilan belgilash
-defineProps({
-	src: {
-		type: String
-	},
-	alt: {
-		type: String,
-		required: false,
-		default: 'image'
-	},
-	errorState: {
-		type: String,
-		required: false,
-		default: ''
-	},
-	imageClass: {
-		type: [String, Array, Object],
-		required: false,
-		default: ''
-	}
-});
+const FALLBACK = '/images/image.png'
+const imgSrc = ref(props.src || FALLBACK)
+
+watch(() => props.src, (val) => {
+	imgSrc.value = val || FALLBACK
+})
+
+const onError = () => {
+	imgSrc.value = FALLBACK
+}
 </script>

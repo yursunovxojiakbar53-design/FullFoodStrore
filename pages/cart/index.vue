@@ -2,9 +2,14 @@
 import { Icon } from '@iconify/vue'
 import { useCartStore } from '@/stores/cart'
 
+const api = useApi()
 const cartStore = useCartStore()
 const { updateItemQuantity, getItemTotal, deleteFromCart } = cartStore
 const { totalPrice, items } = storeToRefs(cartStore)
+
+const getProductImage = (item) => {
+	return api.fileUrl(item?.image)
+}
 
 const getItemQuantity = (productId) => {
 	const item = items.value.find((item) => item.id === productId)
@@ -28,11 +33,10 @@ const updateQuantity = (productId, newQuantity) => {
 					</NuxtLink>
 				</div>
 				<template v-else>
-					<div class="rounded-lg dark:border shadow-blog hover:shadow-box p-4 md:p-6 relative" v-for="(item, key) in items" :key>
+					<div class="rounded-lg dark:border shadow-blog hover:shadow-box p-4 md:p-6 relative" v-for="item in items" :key="item.id">
 						<div class="space-y-2 md:flex md:items-center md:justify-between md:gap-4">
 							<div class="shrink-0 md:order-1 h-20 w-20 md:h-24 md:w-24 border-2 rounded-xl overflow-hidden relative">
-								<img class="h-full w-full object-cover" src="/assets/images/product.webp" alt="imac image" />
-								<img class="hidden h-full w-full object-cover" src="/assets/images/product.webp" alt="imac image" />
+								<img class="h-full w-full object-cover" :src="getProductImage(item)" :alt="item.title?.uz" />
 							</div>
 
 							<div class="flex items-center justify-between md:order-3 md:justify-end gap-2">
@@ -51,9 +55,9 @@ const updateQuantity = (productId, newQuantity) => {
 							</div>
 
 							<div class="w-full flex-1 md:order-2">
-								<p class="sm:text-lg text-base font-semibold">{{ item.title.uz }}</p>
+								<p class="sm:text-lg text-base font-semibold">{{ item.title?.uz || item.title }}</p>
 								<p class="text-xs text-muted-foreground mb-2 line-clamp-2">
-									{{ item.description.uz }}
+									{{ item.description?.uz || item.description || '' }}
 								</p>
 								<div>
 									<p class="line-through text-muted-foreground text-xs" v-if="false">120 000 UZS</p>

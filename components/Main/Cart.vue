@@ -2,9 +2,14 @@
 import { Icon } from '@iconify/vue'
 import { useCartStore } from '@/stores/cart'
 
+const api = useApi()
 const cartStore = useCartStore()
 const { items } = storeToRefs(cartStore)
 const { deleteFromCart, clearCart } = cartStore
+
+const getImageUrl = (item) => {
+	return api.fileUrl(item?.image)
+}
 </script>
 
 <template>
@@ -21,7 +26,7 @@ const { deleteFromCart, clearCart } = cartStore
 						<div v-else class="flex-center-between gap-2 py-2 pb-4 px-4 border-b last:border-b-0 transition-300" v-for="item in items" :key="item.id">
 							<div class="flex-y-center gap-2">
 								<div class="relative overflow-hidden shrink-0 w-10 h-10 flex-center">
-									<CommonImage class="w-full h-full" :src="`https://tarnov.uz/_next/image?url=https%3A%2F%2Fcdn.delever.uz%2Fdelever%2F${item.image}&w=1920&q=75`" :alt="item.title?.uz" :image-class="'object-center rounded'" />
+									<CommonImage class="w-full h-full" :src="getImageUrl(item)" :alt="item.title?.uz" :image-class="'object-center rounded'" />
 								</div>
 								<div class="flex flex-col gap-0.5">
 									<h5 class="font-medium text-sm line-clamp-1">{{ item?.title?.uz }}</h5>

@@ -1,96 +1,189 @@
 <script setup>
-import { useTranslate } from '~/utils/i18n-validators';
-const { validPhoneNumber, minLength, requiredIf } = useTranslate();
-defineProps({
-	modelValue: Boolean
-});
+defineProps({ modelValue: Boolean })
+const emit = defineEmits(['update:modelValue', 'login-success'])
 
-const emit = defineEmits(['update:modelValue']);
+const authStore = useAuthStore()
+const cartStore = useCartStore()
+const categoriesStore = useCategoriesStore()
 
-const step = ref(1);
-const loading = ref(false);
+const tab = ref('login') // 'login' | 'register' | 'verify'
+const loading = ref(false)
+const errorMsg = ref('')
+const pendingEmail = ref('')
 
-const form = useForm(
-	{
-		phone: '',
-		otp: ''
-	},
-	{
-		phone: { required: requiredIf(() => step.value === 1), validPhoneNumber },
-		otp: { required: requiredIf(() => step.value === 2), minLength: minLength(6) }
+const loginForm = reactive({ email: '', password: '' })
+const registerForm = reactive({ firstName: '', email: '', password: '', prePassword: '' })
+const verifyCode = ref([])
+
+const submitLogin = async () => {
+	if (!loginForm.email || !loginForm.password) return
+	loading.value = true
+	errorMsg.value = ''
+	const res = await authStore.login(loginForm.email, loginForm.password)
+	loading.value = false
+	if (res.success) {
+		await cartStore.syncFromBackend()
+		await categoriesStore.fetchCategories()
+		emit('login-success')
+		close()
+	} else {
+		errorMsg.value = res.message
 	}
-);
-
-const submit = () => {
-	form.$v.value.$touch();
-	if (!form.$v.value.$invalid) {
-		if (step.value === 1) {
-			sendCode();
-		} else {
-			verifyCode();
-		}
-	}
-};
-
-function sendCode() {
-	step.value = 2;
 }
-function verifyCode() {}
 
-function resetForm() {
-	form.values.otp = '';
-	form.values.phone = '';
-	step.value = 1;
-	emit('update:modelValue', false);0
+const submitRegister = async () => {
+	if (!registerForm.firstName || !registerForm.email || !registerForm.password || !registerForm.prePassword) {
+		errorMsg.value = 'Barcha maydonlarni to\'ldiring'
+		return
+	}
+	if (registerForm.password !== registerForm.prePassword) {
+		errorMsg.value = 'Parollar mos kelmaydi'
+		return
+	}
+	if (registerForm.password.length < 6) {
+		errorMsg.value = 'Parol kamida 6 ta belgi bo\'lishi kerak'
+		return
+	}
+	loading.value = true
+	errorMsg.value = ''
+	const res = await authStore.register(
+		registerForm.firstName, registerForm.email,
+		registerForm.password, registerForm.prePassword
+	)
+	loading.value = false
+	if (res.success) {
+		pendingEmail.value = registerForm.email
+		tab.value = 'verify'
+	} else {
+		errorMsg.value = res.message
+	}
+}
+
+const submitVerify = async () => {
+	const code = verifyCode.value.join('')
+	if (code.length < 6) return
+	loading.value = true
+	errorMsg.value = ''
+	const res = await authStore.verify(pendingEmail.value, code, registerForm.password)
+	loading.value = false
+	if (res.success) {
+		await cartStore.syncFromBackend()
+		await categoriesStore.fetchCategories()
+		emit('login-success')
+		close()
+	} else {
+		errorMsg.value = res.message
+	}
+}
+
+const close = () => {
+	tab.value = 'login'
+	errorMsg.value = ''
+	loading.value = false
+	Object.assign(loginForm, { email: '', password: '' })
+	Object.assign(registerForm, { firstName: '', email: '', password: '', prePassword: '' })
+	verifyCode.value = []
+	emit('update:modelValue', false)
 }
 </script>
 
 <template>
-	<Dialog :open="modelValue" @update:open="emit('update:modelValue', $event)">
-		<DialogContent class="p-4 max-w-[24rem]">
+	<Dialog :open="modelValue" @update:open="close">
+		<DialogContent class="p-5 max-w-sm">
 			<DialogHeader>
-				<DialogTitle>Avtorizatsiya</DialogTitle>
-				<DialogDescription v-if="step === 1"> Iltimos, telefon raqamingizni kiriting </DialogDescription>
-				<DialogDescription v-else> Iltimos, telefon raqamingizni yuborilgan kodni kiriting </DialogDescription>
-				<Button v-if="step === 2" @click="step = 1" variant="outline" class="w-fit px-2 py-1 rounded-lg text-sm gap-1.5">
-					<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 256 256">
-						<g fill="currentColor">
-							<path d="M221.66 90.34L192 120l-56-56l29.66-29.66a8 8 0 0 1 11.31 0L221.66 79a8 8 0 0 1 0 11.34" opacity="0.2" />
-							<path
-								d="m227.32 73.37l-44.69-44.68a16 16 0 0 0-22.63 0L36.69 152A15.86 15.86 0 0 0 32 163.31V208a16 16 0 0 0 16 16h168a8 8 0 0 0 0-16H115.32l112-112a16 16 0 0 0 0-22.63M79.32 188L164 103.31L180.69 120L96 204.69ZM68 176.69L51.31 160L136 75.31L152.69 92Zm-20 2.62L76.69 208H48Zm144-70.62L147.32 64l24-24L216 84.69Z"
-							/>
-						</g>
-					</svg>
-					{{ formatPhoneNumber(form.values.phone) }}
-				</Button>
+				<DialogTitle>
+					{{ tab === 'verify' ? 'Email tasdiqlash' : 'Avtorizatsiya' }}
+				</DialogTitle>
 			</DialogHeader>
-			<Transition name="fade" mode="out-in">
-				<div class="w-full flex items-center" v-if="step === 1">
-					<div class="grid gap-1.5 w-full">
-						<Label for="terms">Telefon raqam</Label>
-						<div class="relative">
-							<Input id="search" type="text" placeholder="Telefon raqamni kiriting" class="pl-12 w-full" v-maska="'## ### ## ##'" v-model="form.values.phone" :error="form.$v.value.phone.$error" />
-							<span class="absolute start-0 text-sm inset-y-0 flex items-center justify-center px-2">
-								<span>+998</span>
-							</span>
-						</div>
-					</div>
-				</div>
-				<div v-else>
-					<PinInput id="pin-input" v-model="form.values.otp" placeholder="-" @complete="handleComplete" class="w-full" type="number">
-						<PinInputGroup class="w-full">
-							<PinInputInput v-for="(id, index) in 6" :key="id" :index="index" class="w-full" :error="form.$v.value.otp.$error" />
-						</PinInputGroup>
-					</PinInput>
-				</div>
-			</Transition>
 
-			<DialogFooter>
-				<Button class="w-full" @click="submit" :disabled="form.$v.value.$invalid || (step === 2 && !form.values.otp)" :loading>
-					<span v-if="step === 1">Davom etish</span>
-					<span v-else>Tasdiqlash</span>
+			<!-- Login / Register tabs -->
+			<div v-if="tab !== 'verify'" class="flex gap-2 mb-2">
+				<Button
+					:variant="tab === 'login' ? 'default' : 'outline'"
+					class="flex-1"
+					@click="tab = 'login'; errorMsg = ''"
+				>Kirish</Button>
+				<Button
+					:variant="tab === 'register' ? 'default' : 'outline'"
+					class="flex-1"
+					@click="tab = 'register'; errorMsg = ''"
+				>Ro'yxatdan o'tish</Button>
+			</div>
+
+			<!-- Error -->
+			<p v-if="errorMsg" class="text-sm text-red-500 rounded bg-red-50 px-3 py-2">
+				{{ errorMsg }}
+			</p>
+
+			<!-- LOGIN -->
+			<div v-if="tab === 'login'" class="flex flex-col gap-3">
+				<div class="grid gap-1.5">
+					<Label>Email</Label>
+					<Input type="email" placeholder="email@gmail.com" v-model="loginForm.email" @keyup.enter="submitLogin" />
+				</div>
+				<div class="grid gap-1.5">
+					<Label>Parol</Label>
+					<Input type="password" placeholder="Parolingiz" v-model="loginForm.password" @keyup.enter="submitLogin" />
+				</div>
+				<Button
+					class="w-full mt-1"
+					@click="submitLogin"
+					:disabled="loading || !loginForm.email || !loginForm.password"
+				>
+					{{ loading ? 'Yuklanmoqda...' : 'Kirish' }}
 				</Button>
-			</DialogFooter>
+			</div>
+
+			<!-- REGISTER -->
+			<div v-if="tab === 'register'" class="flex flex-col gap-3">
+				<div class="grid gap-1.5">
+					<Label>Ism</Label>
+					<Input type="text" placeholder="Ismingiz" v-model="registerForm.firstName" />
+				</div>
+				<div class="grid gap-1.5">
+					<Label>Email</Label>
+					<Input type="email" placeholder="email@gmail.com" v-model="registerForm.email" />
+				</div>
+				<div class="grid gap-1.5">
+					<Label>Parol</Label>
+					<Input type="password" placeholder="Kamida 6 ta belgi" v-model="registerForm.password" />
+				</div>
+				<div class="grid gap-1.5">
+					<Label>Parolni tasdiqlang</Label>
+					<Input
+						type="password"
+						placeholder="Parolni qaytaring"
+						v-model="registerForm.prePassword"
+						@keyup.enter="submitRegister"
+					/>
+				</div>
+				<Button class="w-full mt-1" @click="submitRegister" :disabled="loading">
+					{{ loading ? 'Yuklanmoqda...' : 'Ro\'yxatdan o\'tish' }}
+				</Button>
+			</div>
+
+			<!-- VERIFY -->
+			<div v-if="tab === 'verify'" class="flex flex-col gap-4">
+				<p class="text-sm text-muted-foreground">
+					<b>{{ pendingEmail }}</b> emailga tasdiqlash kodi yuborildi.
+					Emailingizni tekshiring va 6 xonali kodni kiriting.
+				</p>
+				<PinInput id="pin-input" v-model="verifyCode" placeholder="-" type="number" class="w-full">
+					<PinInputGroup class="w-full">
+						<PinInputInput v-for="(_, index) in 6" :key="index" :index="index" class="w-full" />
+					</PinInputGroup>
+				</PinInput>
+				<Button
+					class="w-full"
+					@click="submitVerify"
+					:disabled="loading || verifyCode.join('').length < 6"
+				>
+					{{ loading ? 'Tekshirilmoqda...' : 'Tasdiqlash' }}
+				</Button>
+				<Button variant="ghost" class="w-full text-sm" @click="tab = 'register'">
+					← Orqaga
+				</Button>
+			</div>
 		</DialogContent>
 	</Dialog>
 </template>

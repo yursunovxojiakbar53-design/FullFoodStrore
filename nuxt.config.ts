@@ -1,11 +1,11 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
 	compatibilityDate: '2024-11-01',
 	devtools: { enabled: true },
 
 	runtimeConfig: {
 		public: {
-			apiBase: process.env.NUXT_API_URL || 'http://localhost:8080/api/v1'
+			backendBase: process.env.NUXT_PUBLIC_BACKEND_BASE || 'http://localhost:8080',
+			apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8080/api/v1'
 		}
 	},
 
@@ -17,9 +17,7 @@ export default defineNuxtConfig({
 				{ name: 'description', content: 'Food Store - eng mazali taomlarni tez yetkazib beramiz!' },
 				{ name: 'viewport', content: 'width=device-width, initial-scale=1' }
 			],
-			link: [
-				{ rel: 'icon', type: 'image/x-icon', href: '/favicon.svg' }
-			]
+			link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.svg' }]
 		}
 	},
 
@@ -27,26 +25,16 @@ export default defineNuxtConfig({
 
 	modules: [
 		'@pinia/nuxt',
-		'dayjs-nuxt',
-		'@nuxt/image',
 		'@nuxtjs/i18n',
 		'@nuxtjs/tailwindcss',
 		'@nuxtjs/color-mode',
 		'shadcn-nuxt',
-		'nuxt-swiper',
 		'pinia-plugin-persistedstate/nuxt'
 	],
 
-	shadcn: {
-		prefix: '',
-		componentDir: './components/ui'
-	},
+	shadcn: { prefix: '', componentDir: './components/ui' },
 
-	colorMode: {
-		classSuffix: '',
-		preference: 'light',
-		fallback: 'light'
-	},
+	colorMode: { classSuffix: '', preference: 'light', fallback: 'light' },
 
 	i18n: {
 		types: 'composition',
@@ -67,7 +55,5 @@ export default defineNuxtConfig({
 		}
 	},
 
-	build: {
-		transpile: ['vue-toastification']
-	}
+	build: {}
 })

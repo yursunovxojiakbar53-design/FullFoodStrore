@@ -1,6 +1,5 @@
 <script setup>
 const open = ref(false)
-import { Icon } from '@iconify/vue'
 import { useCartStore } from '@/stores/cart'
 
 const cartStore = useCartStore()
@@ -74,9 +73,9 @@ const { totalPrice } = storeToRefs(cartStore)
 			<ScrollArea class="relative overflow-hidden my-4 h-[calc(100vh-8rem)] pb-10">
 				<nav class="flex flex-col gap-4 text-sm xl:gap-6">
 					<NuxtLink to="/" class="transition-colors hover:text-foreground/80 text-foreground">Menyu</NuxtLink>
-					<NuxtLink to="/" class="transition-colors hover:text-foreground/80 text-foreground">Filiallar</NuxtLink>
-					<NuxtLink to="/" class="transition-colors hover:text-foreground/80 text-foreground">Biz haqimizda</NuxtLink>
-					<NuxtLink to="/" class="transition-colors hover:text-foreground/80 text-foreground">Bog'lanish</NuxtLink>
+					<NuxtLink to="/branches" class="transition-colors hover:text-foreground/80 text-foreground">Filiallar</NuxtLink>
+					<NuxtLink to="/about" class="transition-colors hover:text-foreground/80 text-foreground">Biz haqimizda</NuxtLink>
+					<NuxtLink to="/contacts" class="transition-colors hover:text-foreground/80 text-foreground">Bog'lanish</NuxtLink>
 				</nav>
 			</ScrollArea>
 		</SheetContent>

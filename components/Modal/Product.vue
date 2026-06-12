@@ -1,6 +1,12 @@
 <script setup>
-import { useMediaQuery } from '@vueuse/core';
-const isDesktop = useMediaQuery('(min-width: 768px)');
+import { useMediaQuery } from '@vueuse/core'
+
+const isDesktop = useMediaQuery('(min-width: 768px)')
+const api = useApi()
+const cartStore = useCartStore()
+const { items } = storeToRefs(cartStore)
+const { addToCart, isInCart, updateItemQuantity } = cartStore
+
 const props = defineProps({
 	modelValue: Boolean,
 	product: {
@@ -13,9 +19,24 @@ const props = defineProps({
 			discountPrice: null
 		})
 	}
-});
+})
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue'])
+
+const imageUrl = computed(() => api.fileUrl(props.product?.image))
+const cartQuantity = computed(() => {
+	const item = items.value.find((cartItem) => cartItem.id === props.product?.id)
+	return item ? item.quantity : 1
+})
+const productInCart = computed(() => props.product?.id ? isInCart(props.product.id) : false)
+
+const handleAddToCart = () => {
+	if (props.product?.id) addToCart(props.product)
+}
+
+const updateQuantity = (quantity) => {
+	if (props.product?.id) updateItemQuantity(props.product.id, quantity)
+}
 </script>
 
 <template>
@@ -28,7 +49,7 @@ const emit = defineEmits(['update:modelValue']);
 					</DialogHeader>
 					<div class="grid gap-4 px-4 overflow-y-auto">
 						<div class="relative max-w-[350px] mx-auto w-full">
-							<CommonImage :src="`https://tarnov.uz/_next/image?url=https%3A%2F%2Fcdn.delever.uz%2Fdelever%2F${product.image}&w=1920&q=75`" :alt="product.title.uz" class="object-contain w-full h-full" />
+							<CommonImage :src="imageUrl" :alt="product?.title?.uz" class="object-contain w-full h-full" />
 						</div>
 						<div class="flex flex-1 flex-col gap-1 pb-4">
 							<h3 class="line-clamp-1 text-lg font-semibold">
@@ -40,51 +61,54 @@ const emit = defineEmits(['update:modelValue']);
 						</div>
 					</div>
 					<DialogFooter class="gap-2 p-4">
-						<Button class="rounded-xl w-full">
+						<Button v-if="!productInCart" class="rounded-xl w-full" @click="handleAddToCart">
 							Savatga qo'shish
 							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus">
 								<path d="M5 12h14" />
 								<path d="M12 5v14" />
 							</svg>
 						</Button>
-						<NumberField class="w-full" :default-value="1" :min="1">
+						<NumberField v-else class="w-full" :model-value="cartQuantity" :min="1" @update:model-value="updateQuantity">
 							<NumberFieldContent>
 								<NumberFieldDecrement />
-								<NumberFieldInput class="rounded-xl" />
+								<NumberFieldInput class="rounded-xl" readonly />
 								<NumberFieldIncrement />
 							</NumberFieldContent>
 						</NumberField>
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>
+
 			<Drawer v-else :open="modelValue" @update:open="emit('update:modelValue', $event)">
 				<DrawerContent class="max-h-[90dvh]">
 					<DrawerHeader class="text-left p-4">
-						<DrawerTitle>Zig'ir oshi komplekt</DrawerTitle>
+						<DrawerTitle>{{ product?.title?.uz }}</DrawerTitle>
 					</DrawerHeader>
 					<div class="grid gap-4 px-4 h-full overflow-y-auto">
 						<div class="relative max-w-[350px] mx-auto w-full">
-							<CommonImage :src="`https://tarnov.uz/_next/image?url=https%3A%2F%2Fcdn.delever.uz%2Fdelever%2F${product.image}&w=1920&q=75`" :alt="product.title.uz" class="object-contain w-full h-full" />
+							<CommonImage :src="imageUrl" :alt="product?.title?.uz" class="object-contain w-full h-full" />
 						</div>
 						<div class="flex flex-1 flex-col gap-1 pb-4">
-							<h3 class="line-clamp-1 text-lg font-semibold">60 500 so'm</h3>
+							<h3 class="line-clamp-1 text-lg font-semibold">
+								{{ formatPrice(product?.out_price) }} <span>{{ product?.currency }}</span>
+							</h3>
 							<p class="text-sm text-foreground/60">
-								Samarqand zigi'r oshini tatib ko'ring! O'zgacha to'g'ralgan go‘sht, xushbo‘y ziravorlar va zig'ir yog'i o'ziga xos ta'mga ega nafis taom yaratadi. Hoziroq buyurtma bering va Samarqandning haqiqiy kulinariya asaridan bahramand bo'ling!
+								{{ product?.description?.uz }}
 							</p>
 						</div>
 					</div>
 					<DrawerFooter class="pt-2 px-4">
-						<Button class="rounded-xl w-full">
+						<Button v-if="!productInCart" class="rounded-xl w-full" @click="handleAddToCart">
 							Savatga qo'shish
 							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus">
 								<path d="M5 12h14" />
 								<path d="M12 5v14" />
 							</svg>
 						</Button>
-						<NumberField class="w-full" :default-value="1" :min="1">
+						<NumberField v-else class="w-full" :model-value="cartQuantity" :min="1" @update:model-value="updateQuantity">
 							<NumberFieldContent>
 								<NumberFieldDecrement />
-								<NumberFieldInput class="rounded-xl" />
+								<NumberFieldInput class="rounded-xl" readonly />
 								<NumberFieldIncrement />
 							</NumberFieldContent>
 						</NumberField>
