@@ -22,8 +22,18 @@ const handleLogout = () => {
 const handleLoginSuccess = async () => {
   open.value = false
 
-  // agar profile reload kerak bo‘lsa:
-  await profileStore.fetchProfile?.()
+  await profileStore.fetchProfile()
+
+  const roles = profileStore.profile?.roles || []
+
+  if (
+      roles.includes('ROLE_SUPER_ADMIN') ||
+      roles.includes('ROLE_ADMIN')
+  ) {
+    await navigateTo('/admin')
+  } else {
+    await navigateTo('/')
+  }
 }
 </script>
 

@@ -121,8 +121,9 @@ async function fetchCategories() {
 }
 
 async function fetchOrders() {
-	const res = await api.get('/admin/orders', { query: { page: 0, size: 100 } })
-	orders.value = api.extractList(res)
+  const res = await api.get('/admin/orders', { query: { page: 0, size: 100 } })
+  // res = { data: { content: [...] }, message: '...', status: true }
+  orders.value = res?.data?.content || res?.data || []
 }
 
 function openProduct(item = null) {
