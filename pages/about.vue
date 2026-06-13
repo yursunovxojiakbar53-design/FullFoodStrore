@@ -5,7 +5,7 @@ const loading = ref(true)
 
 onMounted(async () => {
 	try {
-		const res = await $fetch(`${config.public.backendBase}/about`)
+const res = await $fetch(`${config.public.apiBase}/open/about`)
 		const data = res?.data || res
 		aboutContent.value = Array.isArray(data) ? data[0] : data
 	} catch {
