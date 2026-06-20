@@ -1,6 +1,32 @@
 export default defineNuxtConfig({
 	compatibilityDate: '2024-11-01',
-	devtools: { enabled: true },
+	devtools: { enabled: false },
+
+	// Sahifalar (pages/) avtomatik skanerlanadi
+	pages: true,
+
+	// Dev tezligi: og'ir kutubxonalarni oldindan tayyorlash (qayta kompilyatsiyani kamaytiradi)
+	vite: {
+		optimizeDeps: {
+			include: [
+				'vue',
+				'pinia',
+				'@vueuse/core',
+				'@vuelidate/core',
+				'@vuelidate/validators',
+				'maska',
+				'lucide-vue-next',
+				'@iconify/vue',
+				'clsx',
+				'tailwind-merge',
+				'class-variance-authority',
+				'swiper',
+				'swiper/vue',
+				'reka-ui',
+				'vaul-vue'
+			]
+		}
+	},
 
 	runtimeConfig: {
 		public: {
@@ -38,20 +64,18 @@ export default defineNuxtConfig({
 
 	i18n: {
 		types: 'composition',
-		strategy: 'prefix_and_default',
+		strategy: 'no_prefix',
 		defaultLocale: 'uz',
 		lazy: true,
 		langDir: 'locales',
 		locales: [
-			{ code: 'ru', iso: 'ru-RU', file: 'ru.json' },
-			{ code: 'uz', iso: 'uz', file: 'uz.json' },
-			{ code: 'en', iso: 'en', file: 'en.json' }
+			{ code: 'uz', iso: 'uz-UZ', name: "O'zbekcha", file: 'uz.json' },
+			{ code: 'en', iso: 'en-US', name: 'English', file: 'en.json' },
+			{ code: 'ru', iso: 'ru-RU', name: 'Русский', file: 'ru.json' }
 		],
 		detectBrowserLanguage: {
 			useCookie: true,
-			cookieKey: 'i18n_redirected',
-			redirectOn: 'root',
-			alwaysRedirect: true
+			cookieKey: 'i18n_redirected'
 		}
 	},
 

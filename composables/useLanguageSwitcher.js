@@ -22,8 +22,9 @@ export const useLanguageSwitcher = () => {
 	const currentLanguage = computed(() => languagesList.find((lang) => lang.code === locale.value));
 
 	function changeLocale(_locale) {
+		const langCookie = useCookie('lang', { maxAge: 60 * 60 * 24 * 365 });
+		langCookie.value = _locale;
 		setLocale(_locale);
-		locale.value = _locale;
 	}
 
 	return { currentLanguage, languagesList, changeLocale };

@@ -41,6 +41,11 @@ export const useCategoriesStore = defineStore('categoriesStore', () => {
 					ru: cat.nameRu || cat.name || '',
 					en: cat.nameEng || cat.name || ''
 				},
+				description: {
+					uz: cat.descriptionUz || '',
+					ru: cat.descriptionRu || '',
+					en: cat.descriptionEn || cat.descriptionEng || ''
+				},
 				products: allProducts
 					.filter((product) =>
 						product.categoryId == cat.id ||

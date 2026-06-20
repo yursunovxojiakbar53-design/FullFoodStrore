@@ -1,23 +1,27 @@
 <script setup>
-const open = ref(false)
 import { useCartStore } from '@/stores/cart'
+
+const { t } = useI18n()
+const open = ref(false)
 
 const cartStore = useCartStore()
 const { totalPrice } = storeToRefs(cartStore)
 </script>
 
 <template>
-	<header class="top-0 z-50 w-full lg:border-b border-dashed lg:-mb-px bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+	<header
+		class="fixed top-0 left-0 right-0 z-50 w-full bg-[#faf7f2]/95 backdrop-blur-md shadow-sm shadow-black/10"
+	>
 		<div class="container flex h-14 items-center">
 			<div class="mr-4 md:mr-1 hidden md:flex">
 				<NuxtLink to="/" class="mr-4 md:mr-2 lg:mr-6 flex items-center lg:space-x1 xl:space-x-2 flex-shrink-0">
-					<img src="/assets/svg/logo.svg" alt="" class="w-[8rem] h-auto" />
+					<span class="text-xl font-bold">🍔 <span class="text-foreground">Food</span><span class="bg-gradient-to-r from-amber-400 to-yellow-600 bg-clip-text text-transparent">Store</span></span>
 				</NuxtLink>
-				<nav class="flex items-center text-sm gap-1">
-					<NuxtLink to="/category" class="transition-300 hover:text-foreground/80 text-foreground px-3 py-1.5 rounded hover:bg-muted"> Kategoriya</NuxtLink>
-					<NuxtLink to="/branches" class="transition-300 hover:text-foreground/80 text-foreground px-3 py-1.5 rounded hover:bg-muted">Filiallar</NuxtLink>
-					<NuxtLink to="/about" class="transition-300 hover:text-foreground/80 text-foreground px-3 py-1.5 rounded hover:bg-muted">Biz haqimizda</NuxtLink>
-					<NuxtLink to="/contacts" class="transition-300 hover:text-foreground/80 text-foreground px-3 py-1.5 rounded hover:bg-muted">Bog'lanish</NuxtLink>
+				<nav class="main-nav flex items-center text-sm gap-1">
+					<NuxtLink to="/category" class="transition-300 text-foreground px-3 py-1.5 border-b-2 border-transparent hover:text-amber-600">{{ t('nav.categories') }}</NuxtLink>
+					<NuxtLink to="/branches" class="transition-300 text-foreground px-3 py-1.5 border-b-2 border-transparent hover:text-amber-600">{{ t('nav.branches') }}</NuxtLink>
+					<NuxtLink to="/about" class="transition-300 text-foreground px-3 py-1.5 border-b-2 border-transparent hover:text-amber-600">{{ t('nav.about') }}</NuxtLink>
+					<NuxtLink to="/contacts" class="transition-300 text-foreground px-3 py-1.5 border-b-2 border-transparent hover:text-amber-600">{{ t('nav.contact') }}</NuxtLink>
 				</nav>
 			</div>
 			<Button @click="open = true" class="md:hidden mr-2" variant="ghost" size="icon">
@@ -35,7 +39,7 @@ const { totalPrice } = storeToRefs(cartStore)
 					<LayoutHeaderLanguageSwitcher />
 					<LayoutHeaderDarkModeToggle />
 					<NuxtLink to="/cart">
-						<Button variant="secondary" size="icon" class="w-auto px-3 !bg-yellow-300">
+						<Button variant="secondary" size="icon" class="w-auto px-3 !bg-gradient-to-r !from-amber-400 !to-yellow-500 !text-amber-950">
 							<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 								<g clip-path="url(#clip0_5392_59026)">
 									<path
@@ -54,7 +58,7 @@ const { totalPrice } = storeToRefs(cartStore)
 									<clipPath id="clip0_5392_59026"><rect width="20" height="20" fill="white"></rect></clipPath>
 								</defs>
 							</svg>
-							<span class="leading-4">{{ formatPrice(totalPrice) }} <span class="hidden sm:inline-flex">so'm</span></span>
+							<span class="leading-4">{{ formatPrice(totalPrice) }} <span class="hidden sm:inline-flex">{{ t('common.currency') }}</span></span>
 						</Button>
 					</NuxtLink>
 					<LayoutHeaderAuthorization />
@@ -67,15 +71,15 @@ const { totalPrice } = storeToRefs(cartStore)
 		<SheetContent side="left">
 			<SheetHeader>
 				<NuxtLink to="/" class="mr-4 md:mr-2 lg:mr-6 flex items-center lg:space-x1 xl:space-x-2">
-					<img src="/assets/svg/logo.svg" alt="marvarid.uz" class="w-[8rem] h-auto" />
+					<span class="text-xl font-bold">🍔 <span class="text-foreground">Food</span><span class="bg-gradient-to-r from-amber-400 to-yellow-600 bg-clip-text text-transparent">Store</span></span>
 				</NuxtLink>
 			</SheetHeader>
 			<ScrollArea class="relative overflow-hidden my-4 h-[calc(100vh-8rem)] pb-10">
 				<nav class="flex flex-col gap-4 text-sm xl:gap-6">
-					<NuxtLink to="/" class="transition-colors hover:text-foreground/80 text-foreground">Menyu</NuxtLink>
-					<NuxtLink to="/branches" class="transition-colors hover:text-foreground/80 text-foreground">Filiallar</NuxtLink>
-					<NuxtLink to="/about" class="transition-colors hover:text-foreground/80 text-foreground">Biz haqimizda</NuxtLink>
-					<NuxtLink to="/contacts" class="transition-colors hover:text-foreground/80 text-foreground">Bog'lanish</NuxtLink>
+					<NuxtLink to="/category" class="transition-colors hover:text-foreground/80 text-foreground">{{ t('nav.categories') }}</NuxtLink>
+					<NuxtLink to="/branches" class="transition-colors hover:text-foreground/80 text-foreground">{{ t('nav.branches') }}</NuxtLink>
+					<NuxtLink to="/about" class="transition-colors hover:text-foreground/80 text-foreground">{{ t('nav.about') }}</NuxtLink>
+					<NuxtLink to="/contacts" class="transition-colors hover:text-foreground/80 text-foreground">{{ t('nav.contact') }}</NuxtLink>
 				</nav>
 			</ScrollArea>
 		</SheetContent>
@@ -83,7 +87,10 @@ const { totalPrice } = storeToRefs(cartStore)
 </template>
 
 <style scoped>
-nav .router-link-exact-active {
-	background-color: hsl(var(--muted));
+/* Aktiv bo'lim — gold rang + tag chiziq */
+.main-nav .router-link-active {
+	color: #ca8a04;
+	font-weight: 600;
+	border-bottom-color: #eab308;
 }
 </style>

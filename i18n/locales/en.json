@@ -1,1 +1,41 @@
-{}
+{
+  "nav": {
+    "categories": "Categories",
+    "branches": "Branches",
+    "about": "About us",
+    "contact": "Contact",
+    "menu": "Menu",
+    "search": "Search products...",
+    "login": "Log in"
+  },
+  "profile": {
+    "personalInfo": "Personal information",
+    "orderStatus": "Order status",
+    "orderHistory": "Order history",
+    "payments": "Payments",
+    "wishlist": "Favorites",
+    "help": "Help",
+    "logout": "Log out"
+  },
+  "common": {
+    "addToCart": "Add to cart",
+    "cart": "Cart",
+    "checkout": "Place order",
+    "goToMenu": "Go to menu",
+    "clear": "Clear",
+    "clearAll": "Clear all",
+    "emptyCart": "Your cart is empty",
+    "loading": "Loading...",
+    "noData": "No data available",
+    "total": "Total",
+    "price": "Price",
+    "save": "Save",
+    "cancel": "Cancel",
+    "retry": "Try again",
+    "currency": "UZS",
+    "fastDelivery": "Fast delivery",
+    "fastDeliveryDesc": "We deliver your orders within 30–40 minutes",
+    "followUs": "Follow us",
+    "allRightsReserved": "All rights reserved."
+  }
+}

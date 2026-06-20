@@ -18,16 +18,20 @@ export const useCartStore = defineStore(
 			return item ? Number(item.out_price || 0) * Number(item.quantity || 0) : 0
 		}
 
-		const mapBackendItem = (item) => ({
-			id: item.productId,
-			cartItemId: item.id,
-			title: { uz: item.productName || '' },
-			description: { uz: '' },
-			out_price: Number(item.productPrice || 0),
-			currency: "so'm",
-			quantity: Number(item.quantity || 1),
-			image: item.attachmentId || item.image || null
-		})
+		const mapBackendItem = (item) => {
+			// Lokal (kartadan qo'shilgan) ma'lumotni saqlab qolish: tavsif, rasm, narx
+			const existing = items.value.find((i) => i.id === item.productId)
+			return {
+				id: item.productId,
+				cartItemId: item.id,
+				title: { uz: item.productName || existing?.title?.uz || '' },
+				description: existing?.description || { uz: '' },
+				out_price: Number(item.productPrice || existing?.out_price || 0),
+				currency: "so'm",
+				quantity: Number(item.quantity || 1),
+				image: item.attachmentId || item.image || existing?.image || null
+			}
+		}
 
 		const applyBackendCart = (cart) => {
 			const backendItems = cart?.items || []

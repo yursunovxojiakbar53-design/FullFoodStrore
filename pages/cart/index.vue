@@ -11,6 +11,18 @@ const getProductImage = (item) => {
 	return api.fileUrl(item?.image)
 }
 
+// Nom va tavsifni xavfsiz matn sifatida olish (xom obyekt chiqmasligi uchun)
+const titleText = (item) => {
+	const t = item?.title
+	if (!t) return ''
+	return typeof t === 'string' ? t : (t.uz || t.ru || t.eng || '')
+}
+const descriptionText = (item) => {
+	const d = item?.description
+	if (!d) return ''
+	return typeof d === 'string' ? d : (d.uz || d.ru || d.eng || '')
+}
+
 const getItemQuantity = (productId) => {
 	const item = items.value.find((item) => item.id === productId)
 	return item ? item.quantity : 1
@@ -55,9 +67,9 @@ const updateQuantity = (productId, newQuantity) => {
 							</div>
 
 							<div class="w-full flex-1 md:order-2">
-								<p class="sm:text-lg text-base font-semibold">{{ item.title?.uz || item.title }}</p>
-								<p class="text-xs text-muted-foreground mb-2 line-clamp-2">
-									{{ item.description?.uz || item.description || '' }}
+								<p class="sm:text-lg text-base font-semibold">{{ titleText(item) }}</p>
+								<p v-if="descriptionText(item)" class="text-xs text-muted-foreground mb-2 line-clamp-2">
+									{{ descriptionText(item) }}
 								</p>
 								<div>
 									<p class="line-through text-muted-foreground text-xs" v-if="false">120 000 UZS</p>

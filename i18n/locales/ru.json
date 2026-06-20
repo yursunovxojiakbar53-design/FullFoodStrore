@@ -1,1 +1,41 @@
-{}
+{
+  "nav": {
+    "categories": "Категории",
+    "branches": "Филиалы",
+    "about": "О нас",
+    "contact": "Контакты",
+    "menu": "Меню",
+    "search": "Поиск товаров...",
+    "login": "Войти"
+  },
+  "profile": {
+    "personalInfo": "Личные данные",
+    "orderStatus": "Статус заказа",
+    "orderHistory": "История заказов",
+    "payments": "Платежи",
+    "wishlist": "Избранное",
+    "help": "Помощь",
+    "logout": "Выйти"
+  },
+  "common": {
+    "addToCart": "В корзину",
+    "cart": "Корзина",
+    "checkout": "Оформить заказ",
+    "goToMenu": "Перейти в меню",
+    "clear": "Очистить",
+    "clearAll": "Очистить всё",
+    "emptyCart": "Ваша корзина пуста",
+    "loading": "Загрузка...",
+    "noData": "Нет данных",
+    "total": "Итого",
+    "price": "Цена",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "retry": "Повторить",
+    "currency": "сум",
+    "fastDelivery": "Быстрая доставка",
+    "fastDeliveryDesc": "Доставляем ваши заказы за 30–40 минут",
+    "followUs": "Мы в соцсетях",
+    "allRightsReserved": "Все права защищены."
+  }
+}

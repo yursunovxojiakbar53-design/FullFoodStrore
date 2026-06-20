@@ -85,12 +85,7 @@ const handleScroll = () => {
 				<section>
 					<div v-for="item in categories" :key="item.id" :id="item.title.uz" class="pt-14 -mt-6">
 						<h2 class="text-xl sm:text-2xl font-bold mb-6">{{ item.title.uz }}</h2>
-						<div class="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-							<CardProduct
-								v-for="product in item.products"
-								:key="product.id"
-								:product="product" />
-						</div>
+						<MainProductSlider :products="item.products" />
 					</div>
 				</section>
 				<MainCart />

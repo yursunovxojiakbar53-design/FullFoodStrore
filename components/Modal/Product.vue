@@ -2,7 +2,7 @@
 import { useMediaQuery } from '@vueuse/core'
 
 const isDesktop = useMediaQuery('(min-width: 768px)')
-const api = useApi()
+const { foodImage } = useFoodImages()
 const cartStore = useCartStore()
 const { items } = storeToRefs(cartStore)
 const { addToCart, isInCart, updateItemQuantity } = cartStore
@@ -23,7 +23,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
-const imageUrl = computed(() => api.fileUrl(props.product?.image))
+const imageUrl = computed(() => foodImage(props.product))
 const cartQuantity = computed(() => {
 	const item = items.value.find((cartItem) => cartItem.id === props.product?.id)
 	return item ? item.quantity : 1

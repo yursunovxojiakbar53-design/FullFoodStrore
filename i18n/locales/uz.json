@@ -1,1 +1,41 @@
-{}
+{
+  "nav": {
+    "categories": "Kategoriya",
+    "branches": "Filiallar",
+    "about": "Biz haqimizda",
+    "contact": "Bog'lanish",
+    "menu": "Menyu",
+    "search": "Mahsulotni qidirish...",
+    "login": "Kirish"
+  },
+  "profile": {
+    "personalInfo": "Shaxsiy ma'lumotlar",
+    "orderStatus": "Buyurtma holati",
+    "orderHistory": "Buyurtmalar tarixi",
+    "payments": "To'lovlar",
+    "wishlist": "Sevimlilar",
+    "help": "Yordam",
+    "logout": "Chiqish"
+  },
+  "common": {
+    "addToCart": "Savatga qo'shish",
+    "cart": "Savatcha",
+    "checkout": "Buyurtma berish",
+    "goToMenu": "Menyuga o'tish",
+    "clear": "Tozalash",
+    "clearAll": "Barchasini tozalash",
+    "emptyCart": "Hozircha savatingiz bo'sh",
+    "loading": "Yuklanmoqda...",
+    "noData": "Ma'lumot mavjud emas",
+    "total": "Jami",
+    "price": "Narx",
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "retry": "Qayta urinish",
+    "currency": "so'm",
+    "fastDelivery": "Tez yetkazib berish",
+    "fastDeliveryDesc": "Buyurtmalaringizni 30–40 daqiqada yetkazamiz",
+    "followUs": "Bizni kuzating",
+    "allRightsReserved": "Barcha huquqlar himoyalangan."
+  }
+}

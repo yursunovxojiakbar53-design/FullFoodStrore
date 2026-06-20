@@ -87,6 +87,17 @@ const submitOrder = async () => {
 	loading.value = false
 
 	if (res.success) {
+		// Buyurtma manzilini saqlash (order-status sahifasi uchun)
+		try {
+			const selFilial = filials.value.find((f) => f.id === selectedFilialId.value)
+			localStorage.setItem('foodstore_last_order', JSON.stringify({
+				deliverType: deliverType.value,
+				address: addressTitle.value.trim(),
+				filialName: selFilial?.title || '',
+				filialAddress: selFilial?.description || '',
+				phone: phone.value
+			}))
+		} catch {}
 		cartStore.clearLocalCart()
 		router.push('/profile/orders')
 	} else {
