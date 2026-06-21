@@ -2,6 +2,7 @@
 import { Icon } from '@iconify/vue'
 import { onClickOutside } from '@vueuse/core'
 import { useCartStore } from '@/stores/cart'
+import { useWishlistStore } from '@/stores/wishlist'
 
 const categoriesStore = useCategoriesStore()
 const { categories, loading } = storeToRefs(categoriesStore)

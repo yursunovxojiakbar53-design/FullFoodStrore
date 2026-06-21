@@ -1,6 +1,7 @@
 <script setup>
 import { Icon } from '@iconify/vue'
 import { useCartStore } from '@/stores/cart'
+import { useWishlistStore } from '@/stores/wishlist'
 
 definePageMeta({
 	layout: 'profile',

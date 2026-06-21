@@ -50,6 +50,7 @@
 
 <script setup>
 import { Icon } from '@iconify/vue'
+import { useWishlistStore } from '@/stores/wishlist'
 
 const { t } = useI18n()
 const route = useRoute()

@@ -1,5 +1,6 @@
 <script setup>
 import { useCartStore } from '@/stores/cart'
+import { useWishlistStore } from '@/stores/wishlist'
 
 const { foodImage } = useFoodImages()
 const wishlist = useWishlistStore()
